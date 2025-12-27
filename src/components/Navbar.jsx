@@ -7,94 +7,66 @@ const Navbar = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      const offset = window.scrollY;
-      if (offset > 50) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
+      setScrolled(window.scrollY > 50);
     };
 
     window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const navItems = ['home', 'about', 'experience', 'projects', 'skills', 'contact'];
 
   return (
     <nav
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-        scrolled
-          ? 'bg-black/70 backdrop-blur-lg py-3 shadow-lg'
-          : 'bg-transparent py-6'
-      }`}
+      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${scrolled
+          ? 'bg-[#0a0a0a]/95 backdrop-blur-sm border-b border-[#1e1e1e]'
+          : 'bg-transparent'
+        }`}
     >
-      <div className="container mx-auto px-4 flex justify-between items-center">
-        <a
-          href="#home"
-          className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 hover:scale-110 transition-all duration-300"
-        >
-          NIRANJAN M
-        </a>
+      <div className="max-w-6xl mx-auto px-4 py-4">
+        <div className="flex justify-between items-center">
+          {/* Logo */}
+          <a href="#home" className="font-mono text-lg group">
+            <span className="text-[#00d4ff]">~</span>
+            <span className="text-[#6b6b6b]">/</span>
+            <span className="text-[#00ff88] group-hover:text-glow-green transition-all">niranjan</span>
+          </a>
 
-        <div className="hidden md:flex space-x-8">
-          {['Home', 'About', 'Experience', 'Projects', 'Skills', 'Contact'].map((item) => (
-            <a
-              key={item}
-              href={`#${item.toLowerCase()}`}
-              className="text-gray-300 hover:text-white relative overflow-hidden group"
-            >
-              <span className="relative z-10 transition-transform duration-500 group-hover:-translate-y-full block">
-                {item}
-              </span>
-              <span className="absolute left-0 top-0 z-0 text-transparent bg-clip-text bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 transition-transform duration-500 translate-y-full group-hover:translate-y-0">
-                {item}
-              </span>
-            </a>
-          ))}
-        </div>
-
-        <button
-          className="md:hidden text-white focus:outline-none"
-          onClick={() => setMenuOpen(!menuOpen)}
-        >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            {menuOpen ? (
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            ) : (
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            )}
-          </svg>
-        </button>
-      </div>
-
-      {menuOpen && (
-        <div className="md:hidden bg-black/90 backdrop-blur-lg w-full absolute top-full left-0 py-4">
-          <div className="container mx-auto px-4 flex flex-col space-y-4">
-            {['Home', 'About', 'Experience', 'Projects', 'Skills', 'Contact'].map((item) => (
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center gap-1">
+            {navItems.map((item) => (
               <a
                 key={item}
-                href={`#${item.toLowerCase()}`}
-                className="text-gray-300 hover:text-white py-2 px-4 hover:bg-white/10 rounded transition-colors"
+                href={`#${item}`}
+                className="font-mono text-sm px-3 py-2 text-[#a0a0a0] hover:text-[#00ff88] transition-colors"
+              >
+                ./{item}
+              </a>
+            ))}
+          </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            className="md:hidden font-mono text-[#00ff88] hover:text-glow-green transition-all"
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
+            {menuOpen ? '[x] close' : '[=] menu'}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Menu */}
+      {menuOpen && (
+        <div className="md:hidden bg-[#111111] border-t border-[#1e1e1e]">
+          <div className="max-w-6xl mx-auto px-4 py-4">
+            {navItems.map((item) => (
+              <a
+                key={item}
+                href={`#${item}`}
+                className="block font-mono text-sm py-3 text-[#a0a0a0] hover:text-[#00ff88] transition-colors border-b border-[#1e1e1e] last:border-0"
                 onClick={() => setMenuOpen(false)}
               >
-                {item}
+                <span className="text-[#00d4ff]">$</span> cd ./{item}
               </a>
             ))}
           </div>
