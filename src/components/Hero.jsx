@@ -1,147 +1,150 @@
 // src/components/Hero.jsx
-import { useState, useEffect } from 'react';
+import { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { profile, stats } from '../data/content';
+import { DUR, EASE_OUT, fadeUp, staggerParent } from '../lib/motion';
+import { useCountUp } from '../lib/hooks';
+import { scrollToId } from '../lib/smoothScroll';
+import Magnetic from './Magnetic';
 
-const Hero = () => {
-    const [displayText, setDisplayText] = useState('');
-    const [showCursor, setShowCursor] = useState(true);
-    const fullText = 'Software Engineer';
+function Stat({ value, suffix, label }) {
+  const [ref, display] = useCountUp(value);
+  return (
+    <div ref={ref}>
+      <div className="font-mono text-2xl text-chalk md:text-3xl">
+        {display}
+        <span className="text-mint">{suffix}</span>
+      </div>
+      <div className="mt-1 text-[12.5px] leading-snug text-fog">{label}</div>
+    </div>
+  );
+}
 
-    useEffect(() => {
-        let index = 0;
-        const typeInterval = setInterval(() => {
-            if (index <= fullText.length) {
-                setDisplayText(fullText.slice(0, index));
-                index++;
-            } else {
-                clearInterval(typeInterval);
-            }
-        }, 100);
+export default function Hero() {
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ['start start', 'end start'],
+  });
 
-        return () => clearInterval(typeInterval);
-    }, []);
+  // Hero recedes as About slides over the top of it.
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.94]);
+  const opacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
+  const y = useTransform(scrollYProgress, [0, 1], [0, -40]);
 
-    useEffect(() => {
-        const cursorInterval = setInterval(() => {
-            setShowCursor(prev => !prev);
-        }, 530);
-        return () => clearInterval(cursorInterval);
-    }, []);
+  return (
+    <section id="home" ref={ref} className="relative h-[130vh]" data-cursor="scroll">
+      <div className="sticky top-0 flex h-screen items-center overflow-hidden">
+        <motion.div style={{ scale, opacity, y }} className="u-container w-full">
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={staggerParent(8, 0.35)}
+            className="grid grid-cols-12 items-end gap-x-8 gap-y-12"
+          >
+            <div className="col-span-12 lg:col-span-8">
+              <motion.div variants={fadeUp} className="eyebrow flex items-center gap-3">
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-mint opacity-60" />
+                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-mint" />
+                </span>
+                open to opportunities
+                <span className="h-px w-6 bg-hair" />
+                {profile.location}
+              </motion.div>
 
-    return (
-        <section id="home" className="min-h-screen flex items-center justify-center px-4 pt-20">
-            <div className="max-w-4xl w-full">
-                {/* Terminal Window */}
-                <div className="terminal-window">
-                    <div className="terminal-header">
-                        <div className="terminal-dot terminal-dot-red"></div>
-                        <div className="terminal-dot terminal-dot-yellow"></div>
-                        <div className="terminal-dot terminal-dot-green"></div>
-                        <span className="terminal-title">niranjan@portfolio ~ </span>
-                    </div>
+              <motion.h1 variants={fadeUp} className="display mt-7 text-chalk">
+                Niranjan
+                <br />
+                <span className="text-fog">M</span>
+              </motion.h1>
 
-                    <div className="terminal-body font-mono">
-                        {/* Welcome Line */}
-                        <div className="text-[#6b6b6b] mb-6 text-sm">
-                            Last login: {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })} on ttys001
-                        </div>
+              <motion.div
+                variants={fadeUp}
+                className="mt-8 flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-sm text-mint md:text-base"
+              >
+                {profile.role}
+                <span className="h-px w-8 bg-hair" />
+                <span className="text-fog">{profile.years}</span>
+              </motion.div>
 
-                        {/* Name */}
-                        <div className="mb-4">
-                            <span className="text-[#00d4ff]">niranjan</span>
-                            <span className="text-[#6b6b6b]">@</span>
-                            <span className="text-[#00ff88]">portfolio</span>
-                            <span className="text-[#6b6b6b]">:~$ </span>
-                            <span className="text-[#e0e0e0]">whoami</span>
-                        </div>
+              <motion.p
+                variants={fadeUp}
+                className="mt-6 max-w-xl text-[15px] leading-relaxed text-fog md:text-base"
+              >
+                {profile.intro}
+              </motion.p>
 
-                        <h1 className="text-4xl md:text-6xl font-bold text-[#00ff88] mb-6 text-glow-green">
-                            Niranjan M
-                        </h1>
-
-                        {/* Role with typing effect */}
-                        <div className="mb-4">
-                            <span className="text-[#00d4ff]">niranjan</span>
-                            <span className="text-[#6b6b6b]">@</span>
-                            <span className="text-[#00ff88]">portfolio</span>
-                            <span className="text-[#6b6b6b]">:~$ </span>
-                            <span className="text-[#e0e0e0]">echo $ROLE</span>
-                        </div>
-
-                        <div className="text-2xl md:text-3xl text-[#e0e0e0] mb-8">
-                            {displayText}
-                            <span className={`text-[#00ff88] ${showCursor ? 'opacity-100' : 'opacity-0'}`}>▋</span>
-                        </div>
-
-                        {/* Description */}
-                        <div className="mb-4">
-                            <span className="text-[#00d4ff]">niranjan</span>
-                            <span className="text-[#6b6b6b]">@</span>
-                            <span className="text-[#00ff88]">portfolio</span>
-                            <span className="text-[#6b6b6b]">:~$ </span>
-                            <span className="text-[#e0e0e0]">cat about.txt</span>
-                        </div>
-
-                        <p className="text-[#a0a0a0] mb-8 text-lg leading-relaxed max-w-2xl">
-                            Full-stack developer specializing in AI integration, data engineering with Apache Airflow, and building scalable applications.
-                        </p>
-
-                        {/* Links */}
-                        <div className="flex flex-wrap gap-4 mb-8">
-                            <a
-                                href="#projects"
-                                className="terminal-btn terminal-btn-filled text-sm"
-                            >
-                                [ENTER] View Projects
-                            </a>
-                            <a
-                                href="#contact"
-                                className="terminal-btn text-sm"
-                            >
-                                [ESC] Contact Me
-                            </a>
-                        </div>
-
-                        {/* Social Links */}
-                        <div className="flex items-center gap-6 text-sm">
-                            <span className="text-[#6b6b6b]">// find me on</span>
-                            <a
-                                href="https://github.com/Niranjanmj02"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="terminal-link hover:text-glow-green"
-                            >
-                                github
-                            </a>
-                            <a
-                                href="https://www.linkedin.com/in/niranjan-m-1ba74b258/"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="terminal-link hover:text-glow-green"
-                            >
-                                linkedin
-                            </a>
-                            <a
-                                href="mailto:niranjanmj02@gmail.com"
-                                className="terminal-link hover:text-glow-green"
-                            >
-                                email
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Scroll Indicator */}
-                <div className="flex justify-center mt-12">
-                    <a href="#about" className="text-[#6b6b6b] hover:text-[#00ff88] transition-colors font-mono text-sm flex flex-col items-center gap-2">
-                        <span>scroll_down</span>
-                        <svg className="w-5 h-5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                        </svg>
-                    </a>
-                </div>
+              <motion.div variants={fadeUp} className="mt-10 flex flex-wrap items-center gap-3">
+                <Magnetic>
+                  <button
+                    type="button"
+                    onClick={() => scrollToId('work')}
+                    data-cursor="link"
+                    className="btn btn-solid"
+                  >
+                    View work
+                  </button>
+                </Magnetic>
+                <Magnetic>
+                  <a href={profile.resume} download data-cursor="link" className="btn">
+                    Résumé ↓
+                  </a>
+                </Magnetic>
+                <Magnetic>
+                  <button
+                    type="button"
+                    onClick={() => scrollToId('contact')}
+                    data-cursor="link"
+                    className="btn"
+                  >
+                    Get in touch
+                  </button>
+                </Magnetic>
+              </motion.div>
             </div>
-        </section>
-    );
-};
 
-export default Hero;
+            <div className="col-span-12 lg:col-span-4">
+              <motion.div variants={fadeUp} className="flex flex-wrap gap-2">
+                {profile.disciplines.map((d) => (
+                  <span key={d} className="chip">
+                    {d}
+                  </span>
+                ))}
+              </motion.div>
+
+              <motion.div
+                variants={fadeUp}
+                className="mt-10 grid grid-cols-2 gap-x-6 gap-y-7 border-t border-hair pt-8 sm:grid-cols-4 lg:grid-cols-2"
+              >
+                {stats.map((s) => (
+                  <Stat key={s.label} {...s} />
+                ))}
+              </motion.div>
+            </div>
+          </motion.div>
+        </motion.div>
+
+        <motion.div
+          style={{ opacity }}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2"
+        >
+          <motion.button
+            type="button"
+            onClick={() => scrollToId('about')}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.1, duration: DUR.entrance, ease: EASE_OUT }}
+            data-cursor="link"
+            className="flex flex-col items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-fog transition-colors hover:text-mint"
+          >
+            scroll
+            <span className="relative block h-8 w-px overflow-hidden bg-hair">
+              <span className="scroll-cue absolute inset-x-0 top-0 h-3 bg-mint" />
+            </span>
+          </motion.button>
+        </motion.div>
+      </div>
+    </section>
+  );
+}

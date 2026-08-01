@@ -1,116 +1,122 @@
 // src/components/About.jsx
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { about, profile } from '../data/content';
+import SectionHeading from './SectionHeading';
+import { Item, Reveal } from './Reveal';
 
-const About = () => {
-  const sectionRef = useRef(null);
+/** One word of the scroll-linked paragraph reveal. */
+function Word({ children, start, end, progress }) {
+  const opacity = useTransform(progress, [start, end], [0.16, 1]);
+  return (
+    <motion.span style={{ opacity }} className="mr-[0.26em] inline-block">
+      {children}
+    </motion.span>
+  );
+}
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('fade-in');
-        }
-      },
-      { threshold: 0.1 }
-    );
+export default function About() {
+  const paragraphRef = useRef(null);
+  const photoRef = useRef(null);
 
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
+  const { scrollYProgress: textProgress } = useScroll({
+    target: paragraphRef,
+    offset: ['start 0.85', 'end 0.55'],
+  });
 
-    return () => {
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current);
-      }
-    };
-  }, []);
+  const { scrollYProgress: photoProgress } = useScroll({
+    target: photoRef,
+    offset: ['start end', 'end start'],
+  });
+  const photoScale = useTransform(photoProgress, [0, 1], [1.12, 1]);
+  const photoY = useTransform(photoProgress, [0, 1], ['-4%', '4%']);
+
+  const words = about.body.split(' ');
 
   return (
-    <section id="about" className="py-20 px-4" ref={sectionRef}>
-      <div className="max-w-4xl mx-auto">
-        {/* Section Header */}
-        <div className="font-mono text-sm text-[#6b6b6b] mb-4">
-          <span className="text-[#00d4ff]">01.</span> about
-        </div>
+    <section
+      id="about"
+      className="relative z-10 -mt-[30vh] pt-[30vh]"
+    >
+      {/* Curtain that wipes the hero away as this section slides over it. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-[42vh] bg-gradient-to-b from-ink via-ink/90 to-transparent"
+      />
 
-        {/* Terminal Window */}
-        <div className="terminal-window">
-          <div className="terminal-header">
-            <div className="terminal-dot terminal-dot-red"></div>
-            <div className="terminal-dot terminal-dot-yellow"></div>
-            <div className="terminal-dot terminal-dot-green"></div>
-            <span className="terminal-title">README.md</span>
+      <div className="u-section u-container relative">
+        <SectionHeading
+          n="01"
+          label="about"
+          title={
+            <>
+              Production AI,
+              <br />
+              not demos.
+            </>
+          }
+          lede={`${profile.location} · ${profile.years} shipping`}
+        >
+          <div ref={paragraphRef} className="max-w-3xl text-[19px] leading-[1.65] md:text-[22px]">
+            {words.map((word, i) => (
+              <Word
+                key={`${word}-${i}`}
+                progress={textProgress}
+                start={i / words.length}
+                end={Math.min(1, (i + 1.6) / words.length)}
+              >
+                {word}
+              </Word>
+            ))}
           </div>
 
-          <div className="terminal-body">
-            <div className="grid md:grid-cols-3 gap-8">
-              {/* Profile Image */}
-              <div className="md:col-span-1">
-                <div className="relative">
-                  <div className="aspect-square rounded-lg overflow-hidden border-2 border-[#1e1e1e] hover:border-[#00ff88] transition-colors">
-                    <img
-                      src="/assets/me.jpg"
-                      alt="Niranjan M"
-                      className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500"
-                    />
-                  </div>
-                  <div className="absolute -bottom-3 -right-3 bg-[#111111] border border-[#1e1e1e] px-3 py-1 rounded font-mono text-xs text-[#00ff88]">
-                    .jpg
-                  </div>
-                </div>
-              </div>
-
-              {/* About Content */}
-              <div className="md:col-span-2">
-                <h2 className="text-2xl font-bold text-[#00ff88] mb-4 font-mono">
-                  # About Me
-                </h2>
-
-                <div className="space-y-4 text-[#a0a0a0] leading-relaxed">
-                  <p>
-                    <span className="text-[#00d4ff]">&gt;</span> Innovative <span className="text-[#00ff88]">Software Engineer</span> with expertise in full-stack development, AI integration, and data engineering.
-                  </p>
-
-                  <p>
-                    <span className="text-[#00d4ff]">&gt;</span> Proven track record of developing scalable applications, implementing <span className="text-[#00ff88]">ETL pipelines with Apache Airflow</span>, and building AI-powered solutions.
-                  </p>
-
-                  <p>
-                    <span className="text-[#00d4ff]">&gt;</span> Published researcher with work on <span className="text-[#00ff88]">deep learning for weed classification</span> at 2024 ASIANCON (IEEE Xplore).
-                  </p>
-                </div>
-
-                {/* Education */}
-                <div className="mt-8 p-4 bg-[#0a0a0a] rounded border border-[#1e1e1e]">
-                  <div className="font-mono text-sm">
-                    <span className="text-[#6b6b6b]">// education</span>
-                    <div className="mt-2">
-                      <span className="text-[#00d4ff]">degree:</span> <span className="text-[#e0e0e0]">Integrated BCA - MCA</span>
-                    </div>
-                    <div>
-                      <span className="text-[#00d4ff]">institution:</span> <span className="text-[#e0e0e0]">Amrita School of Computing, Mysuru</span>
-                    </div>
-                    <div>
-                      <span className="text-[#00d4ff]">year:</span> <span className="text-[#e0e0e0]">2019 - 2024</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Quick Stats */}
-                <div className="mt-6 flex flex-wrap gap-3">
-                  {['JavaScript', 'Python', 'React', 'Node.js', 'FastAPI', 'AI/ML'].map((skill) => (
-                    <span key={skill} className="terminal-tag">
-                      --{skill.toLowerCase().replace(/[\/\s]/g, '-')}
-                    </span>
-                  ))}
+          <div className="mt-16 grid grid-cols-12 gap-8">
+            <div className="col-span-12 sm:col-span-5">
+              <div
+                ref={photoRef}
+                className="group relative overflow-hidden rounded-2xl border border-hair"
+              >
+                <motion.img
+                  src="/assets/me.jpg"
+                  alt="Niranjan M"
+                  loading="lazy"
+                  style={{ scale: photoScale, y: photoY }}
+                  className="aspect-[4/5] w-full object-cover grayscale transition-[filter] duration-700 ease-out group-hover:grayscale-0"
+                />
+                <div className="pointer-events-none absolute inset-0 bg-mint/10 mix-blend-color opacity-100 transition-opacity duration-700 group-hover:opacity-0" />
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between p-4 font-mono text-[11px] text-chalk">
+                  <span>{profile.name}</span>
+                  <span className="text-mint">{profile.location}</span>
                 </div>
               </div>
             </div>
+
+            <Reveal className="col-span-12 space-y-px sm:col-span-7" count={about.pillars.length}>
+              {about.pillars.map((pillar) => (
+                <Item
+                  key={pillar.k}
+                  className="border-t border-hair py-5 first:border-t-0 sm:py-6"
+                >
+                  <div className="font-mono text-[11px] uppercase tracking-[0.16em] text-mint">
+                    {pillar.k}
+                  </div>
+                  <div className="mt-2 text-[15px] leading-relaxed text-fog">{pillar.v}</div>
+                </Item>
+              ))}
+              <Item className="pt-6">
+                <a
+                  href={profile.resume}
+                  download
+                  data-cursor="link"
+                  className="btn"
+                >
+                  Download résumé ↓
+                </a>
+              </Item>
+            </Reveal>
           </div>
-        </div>
+        </SectionHeading>
       </div>
     </section>
   );
-};
-
-export default About;
+}

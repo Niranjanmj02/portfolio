@@ -7,12 +7,24 @@ export default {
   ],
   theme: {
   	extend: {
+  		fontFamily: {
+  			sans: ['Inter', 'system-ui', 'sans-serif'],
+  			mono: ['JetBrains Mono', 'Fira Code', 'monospace']
+  		},
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
   		},
   		colors: {
+  			ink: 'var(--ink)',
+  			panel: 'var(--panel)',
+  			panel2: 'var(--panel-2)',
+  			hair: 'var(--hair)',
+  			hairStrong: 'var(--hair-strong)',
+  			chalk: 'var(--chalk)',
+  			fog: 'var(--fog)',
+  			mint: 'var(--mint)',
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {

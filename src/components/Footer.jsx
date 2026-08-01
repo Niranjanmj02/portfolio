@@ -1,55 +1,52 @@
 // src/components/Footer.jsx
-const Footer = () => {
+import { profile } from '../data/content';
+import { scrollToTop } from '../lib/smoothScroll';
+import { RevealItem } from './Reveal';
+
+const LINKS = [
+  { label: 'github', href: profile.github },
+  { label: 'linkedin', href: profile.linkedin },
+  { label: 'email', href: `mailto:${profile.email}` },
+];
+
+export default function Footer() {
   return (
-    <footer className="py-8 px-4 border-t border-[#1e1e1e]">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-          {/* Logo */}
-          <div className="font-mono text-sm">
-            <span className="text-[#6b6b6b]">// </span>
-            <span className="text-[#00ff88]">niranjan</span>
-            <span className="text-[#6b6b6b]">@portfolio</span>
+    <footer className="relative z-10 border-t border-hair">
+      <div className="u-container py-14">
+        <RevealItem>
+          <div className="flex flex-wrap items-end justify-between gap-8">
+            <div>
+              <div className="display text-chalk/[0.14]">Niranjan M</div>
+              <div className="mt-4 font-mono text-[12px] text-fog">
+                {profile.role} · {profile.location}
+              </div>
+            </div>
+
+            <button type="button" onClick={scrollToTop} data-cursor="link" className="btn">
+              Back to top ↑
+            </button>
           </div>
 
-          {/* Social Links */}
-          <div className="flex items-center gap-6 font-mono text-sm">
-            <a
-              href="https://github.com/Niranjanmj02"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[#6b6b6b] hover:text-[#00ff88] transition-colors"
-            >
-              github
-            </a>
-            <a
-              href="https://www.linkedin.com/in/niranjan-m-1ba74b258/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[#6b6b6b] hover:text-[#00ff88] transition-colors"
-            >
-              linkedin
-            </a>
-            <a
-              href="mailto:niranjanmj02@gmail.com"
-              className="text-[#6b6b6b] hover:text-[#00ff88] transition-colors"
-            >
-              email
-            </a>
-          </div>
+          <div className="mt-12 flex flex-wrap items-center justify-between gap-6 border-t border-hair pt-7 font-mono text-[11.5px] text-fog">
+            <span>© {new Date().getFullYear()} Niranjan M</span>
 
-          {/* Copyright */}
-          <div className="font-mono text-xs text-[#3a3a3a]">
-            © {new Date().getFullYear()} Niranjan M
+            <div className="flex items-center gap-6">
+              {LINKS.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  target={link.href.startsWith('http') ? '_blank' : undefined}
+                  rel="noopener noreferrer"
+                  data-cursor="link"
+                  className="transition-colors hover:text-mint"
+                >
+                  {link.label}
+                </a>
+              ))}
+            </div>
           </div>
-        </div>
-
-        {/* Built with */}
-        <div className="mt-6 text-center font-mono text-xs text-[#3a3a3a]">
-          <span className="text-[#6b6b6b]">$</span> built with react + tailwind
-        </div>
+        </RevealItem>
       </div>
     </footer>
   );
-};
-
-export default Footer;
+}

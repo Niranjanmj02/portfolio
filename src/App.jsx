@@ -1,48 +1,56 @@
 // src/App.jsx
-import { useState, useEffect } from 'react';
+import { MotionConfig } from 'framer-motion';
+
+import SmoothScroll from './components/SmoothScroll';
+import ScrollProgress from './components/ScrollProgress';
+import Scene3D from './components/three/Scene3D';
+import Grain from './components/Grain';
+import Cursor from './components/Cursor';
+import Intro from './components/Intro';
+
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import About from './components/About';
 import Experience from './components/Experience';
 import Projects from './components/Projects';
 import Skills from './components/Skills';
+import Research from './components/Research';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 
-function App() {
-  const [loading, setLoading] = useState(true);
+import { EASE_OUT } from './lib/motion';
 
-  useEffect(() => {
-    setTimeout(() => setLoading(false), 1500);
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="h-screen w-screen flex flex-col items-center justify-center bg-[#0a0a0a]">
-        <div className="font-mono text-[#00ff88] text-lg mb-4">
-          <span className="text-[#00d4ff]">$</span> initializing portfolio...
-        </div>
-        <div className="w-64 h-2 bg-[#1e1e1e] rounded overflow-hidden">
-          <div className="h-full bg-gradient-to-r from-[#00ff88] to-[#00d4ff] animate-pulse" style={{ width: '100%' }}></div>
-        </div>
-      </div>
-    );
-  }
-
+export default function App() {
   return (
-    <div className="bg-[#0a0a0a] text-[#e0e0e0] min-h-screen">
+    // reducedMotion="user" strips transforms from every animation at once.
+    <MotionConfig reducedMotion="user" transition={{ ease: EASE_OUT }}>
+      <SmoothScroll />
+      <Scene3D />
+      <Grain />
+      <Cursor />
+      <ScrollProgress />
+      <Intro />
+
+      <a
+        href="#about"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[90] focus:rounded-full focus:bg-mint focus:px-4 focus:py-2 focus:font-mono focus:text-xs focus:text-ink"
+      >
+        Skip to content
+      </a>
+
       <Navbar />
-      <main>
+
+      <main className="relative z-10">
         <Hero />
         <About />
         <Experience />
         <Projects />
         <Skills />
+        <Research />
         <Contact />
       </main>
+
       <Footer />
-    </div>
+    </MotionConfig>
   );
 }
-
-export default App;

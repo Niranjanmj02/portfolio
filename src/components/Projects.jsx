@@ -1,149 +1,118 @@
 // src/components/Projects.jsx
-import { useState, useRef, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { projects } from '../data/content';
+import SectionHeading from './SectionHeading';
+import { fadeUp, staggerParent, VIEWPORT } from '../lib/motion';
+import { firePulse, setActiveCluster } from '../lib/sceneStore';
 
-const Projects = () => {
-  const [hoveredProject, setHoveredProject] = useState(null);
-  const sectionRef = useRef(null);
+// Asymmetric spans so the grid doesn't read as a table of identical boxes.
+const SPANS = [
+  'lg:col-span-7',
+  'lg:col-span-5',
+  'lg:col-span-5',
+  'lg:col-span-7',
+  'lg:col-span-6',
+  'lg:col-span-6',
+];
 
-  const projects = [
-    {
-      title: 'Hope Connect',
-      description: 'Donation platform connecting donors with orphanages, featuring donation tracking and secure payment processing.',
-      technologies: ['Node.js', 'Express.js', 'MongoDB', 'React'],
-      github: '#',
-      demo: '#'
-    },
-    {
-      title: 'DeepWeed CNN',
-      description: 'Published research at 2024 ASIANCON (IEEE Xplore). Deep learning model using VGG16 for weed classification.',
-      technologies: ['TensorFlow', 'VGG16', 'CNN', 'Python'],
-      github: '#',
-      demo: 'https://ieeexplore.ieee.org/'
-    },
-    {
-      title: 'AI Proctoring System',
-      description: 'Advanced proctoring with LiveKit and Google MediaPipe for detecting multiple persons and objects.',
-      technologies: ['LiveKit', 'MediaPipe', 'Node.js', 'React'],
-      github: '#',
-      demo: '#'
-    },
-    {
-      title: 'RAG Chatbot',
-      description: 'AI chatbot using RAG architecture, Google Gemini API, and WebSocket for real-time query resolution.',
-      technologies: ['Gemini API', 'RAG', 'PostgreSQL', 'FastAPI'],
-      github: '#',
-      demo: '#'
-    },
-    {
-      title: 'Voice Chat App',
-      description: 'Real-time voice chat with Google Gemini multimodal AI and LiveKit Agents integration.',
-      technologies: ['Gemini', 'LiveKit', 'WebRTC', 'React'],
-      github: '#',
-      demo: '#'
-    },
-    {
-      title: 'ETL Pipeline System',
-      description: 'Comprehensive data migration pipelines using Apache Airflow with Python DAGs and upsert operations.',
-      technologies: ['Airflow', 'Python', 'PostgreSQL', 'Azure'],
-      github: '#',
-      demo: '#'
-    }
-  ];
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('fade-in');
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => {
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current);
-      }
-    };
-  }, []);
-
+function ProjectCard({ project, index }) {
   return (
-    <section id="projects" className="py-20 px-4" ref={sectionRef}>
-      <div className="max-w-4xl mx-auto">
-        {/* Section Header */}
-        <div className="font-mono text-sm text-[#6b6b6b] mb-4">
-          <span className="text-[#00d4ff]">03.</span> projects
+    <motion.article
+      variants={fadeUp}
+      data-cursor={project.link ? 'view' : undefined}
+      onMouseEnter={() => {
+        firePulse();
+        setActiveCluster(index % 3);
+      }}
+      onMouseLeave={() => setActiveCluster(-1)}
+      className={`group relative col-span-12 flex flex-col justify-between overflow-hidden rounded-2xl border border-hair bg-panel/60 p-7 backdrop-blur-sm transition-colors duration-300 hover:border-mint/40 md:col-span-6 md:p-8 ${
+        SPANS[index] || 'lg:col-span-6'
+      } ${project.flagship ? 'min-h-[320px]' : 'min-h-[280px]'}`}
+    >
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        style={{
+          background:
+            'radial-gradient(120% 90% at 100% 0%, rgba(0,255,136,0.10) 0%, rgba(0,255,136,0) 60%)',
+        }}
+      />
+
+      <div className="relative">
+        <div className="flex items-start justify-between gap-4">
+          <span className="font-mono text-[11px] text-fog">
+            {String(index + 1).padStart(2, '0')}
+          </span>
+          {project.flagship && <span className="chip chip-accent">flagship</span>}
         </div>
 
-        <div className="font-mono text-[#00ff88] mb-8 text-lg">
-          $ ls -la ./projects/
-        </div>
+        <h3 className="mt-6 text-2xl font-semibold tracking-tight text-chalk transition-colors duration-300 group-hover:text-mint md:text-[28px]">
+          {project.title}
+        </h3>
+        <div className="mt-1.5 font-mono text-[12px] text-fog">{project.kind}</div>
 
-        {/* Projects Grid */}
-        <div className="grid md:grid-cols-2 gap-4">
-          {projects.map((project, index) => (
-            <div
-              key={index}
-              className="terminal-window group hover:border-[#00ff88]/50 transition-all duration-300"
-              onMouseEnter={() => setHoveredProject(index)}
-              onMouseLeave={() => setHoveredProject(null)}
-            >
-              <div className="terminal-header">
-                <div className="terminal-dot terminal-dot-red"></div>
-                <div className="terminal-dot terminal-dot-yellow"></div>
-                <div className="terminal-dot terminal-dot-green"></div>
-                <span className="terminal-title">{project.title.toLowerCase().replace(/\s+/g, '-')}.md</span>
-              </div>
+        <p className="mt-4 max-w-lg text-[14.5px] leading-relaxed text-fog">
+          {project.description}
+        </p>
+      </div>
 
-              <div className="p-5">
-                <h3 className="font-bold text-lg text-[#e0e0e0] mb-2 group-hover:text-[#00ff88] transition-colors">
-                  {project.title}
-                </h3>
-
-                <p className="text-[#6b6b6b] text-sm mb-4 leading-relaxed">
-                  {project.description}
-                </p>
-
-                {/* Tech Tags */}
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {project.technologies.map((tech, techIndex) => (
-                    <span
-                      key={techIndex}
-                      className="font-mono text-xs text-[#00d4ff] bg-[#00d4ff]/10 px-2 py-1 rounded"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-
-                {/* Links */}
-                <div className="flex gap-4 font-mono text-xs">
-                  <a
-                    href={project.github}
-                    className="text-[#6b6b6b] hover:text-[#00ff88] transition-colors"
-                  >
-                    [github]
-                  </a>
-                  <a
-                    href={project.demo}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[#6b6b6b] hover:text-[#00ff88] transition-colors"
-                  >
-                    [live →]
-                  </a>
-                </div>
-              </div>
-            </div>
+      <div className="relative mt-8">
+        <div className="flex flex-wrap gap-2">
+          {project.tags.map((tag) => (
+            <span key={tag} className="chip">
+              {tag}
+            </span>
           ))}
         </div>
+
+        <div className="mt-6 flex items-center justify-between border-t border-hair pt-5 font-mono text-[11.5px]">
+          <span className="text-fog">{project.context}</span>
+          {project.link ? (
+            <a
+              href={project.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-cursor="link"
+              className="text-mint transition-transform duration-300 group-hover:translate-x-0.5"
+            >
+              {project.linkLabel} ↗
+            </a>
+          ) : (
+            <span className="text-fog/70">not public</span>
+          )}
+        </div>
       </div>
+    </motion.article>
+  );
+}
+
+export default function Projects() {
+  return (
+    <section id="work" className="u-section u-container relative z-10">
+      <SectionHeading
+        n="03"
+        label="work"
+        title={
+          <>
+            Systems in
+            <br />
+            production.
+          </>
+        }
+        lede="Internal platform work at Examic, plus published research."
+      >
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={VIEWPORT}
+          variants={staggerParent(projects.length)}
+          className="grid grid-cols-12 gap-5"
+        >
+          {projects.map((project, i) => (
+            <ProjectCard key={project.title} project={project} index={i} />
+          ))}
+        </motion.div>
+      </SectionHeading>
     </section>
   );
-};
-
-export default Projects;
+}

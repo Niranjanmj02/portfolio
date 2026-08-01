@@ -1,87 +1,126 @@
 // src/components/Cursor.jsx
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { motion, useMotionValue, useSpring } from 'framer-motion';
+import { SPRING, DUR, EASE_OUT } from '../lib/motion';
+import { useFinePointer, usePrefersReducedMotion } from '../lib/hooks';
+import { setPointer } from '../lib/sceneStore';
 
-const Cursor = () => {
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [hidden, setHidden] = useState(false);
-  const [clicked, setClicked] = useState(false);
-  const [linkHovered, setLinkHovered] = useState(false);
+const LABELS = { view: 'VIEW', scroll: 'SCROLL', drag: '↔' };
 
-  useEffect(() => {
-    const updatePosition = (e) => {
-      setPosition({ x: e.clientX, y: e.clientY });
-    };
-
-    const handleMouseDown = () => setClicked(true);
-    const handleMouseUp = () => setClicked(false);
-    const handleMouseEnter = () => setHidden(false);
-    const handleMouseLeave = () => setHidden(true);
-
-    const handleLinkHoverStart = () => setLinkHovered(true);
-    const handleLinkHoverEnd = () => setLinkHovered(false);
-
-    document.addEventListener('mousemove', updatePosition);
-    document.addEventListener('mousedown', handleMouseDown);
-    document.addEventListener('mouseup', handleMouseUp);
-    document.addEventListener('mouseenter', handleMouseEnter);
-    document.addEventListener('mouseleave', handleMouseLeave);
-
-    const links = document.querySelectorAll('a, button');
-    links.forEach((link) => {
-      link.addEventListener('mouseenter', handleLinkHoverStart);
-      link.addEventListener('mouseleave', handleLinkHoverEnd);
-    });
-
-    return () => {
-      document.removeEventListener('mousemove', updatePosition);
-      document.removeEventListener('mousedown', handleMouseDown);
-      document.removeEventListener('mouseup', handleMouseUp);
-      document.removeEventListener('mouseenter', handleMouseEnter);
-      document.removeEventListener('mouseleave', handleMouseLeave);
-
-      links.forEach((link) => {
-        link.removeEventListener('mouseenter', handleLinkHoverStart);
-        link.removeEventListener('mouseleave', handleLinkHoverEnd);
-      });
-    };
-  }, []);
-
-  return (
-    <>
-      <div
-        className={`fixed top-0 left-0 pointer-events-none z-50 mix-blend-difference transition-transform duration-300 ${
-          hidden ? 'opacity-0' : 'opacity-100'
-        }`}
-        style={{
-          transform: `translate(${position.x}px, ${position.y}px)`,
-        }}
-      >
-        <div
-          className={`relative rounded-full bg-white transition-all duration-300 ${
-            clicked ? 'w-6 h-6 opacity-30' : linkHovered ? 'w-12 h-12 opacity-50' : 'w-8 h-8'
-          }`}
-          style={{
-            transform: `translate(-50%, -50%)`,
-          }}
-        />
-      </div>
-      <div
-        className="fixed top-0 left-0 pointer-events-none z-40 mix-blend-difference transition-transform duration-500"
-        style={{
-          transform: `translate(${position.x}px, ${position.y}px) scale(${linkHovered ? 4 : 1})`,
-        }}
-      >
-        <div
-          className="relative rounded-full bg-white opacity-20 transition-all duration-500"
-          style={{
-            transform: `translate(-50%, -50%)`,
-            width: '30px',
-            height: '30px',
-          }}
-        />
-      </div>
-    </>
-  );
+const RING = {
+  default: { width: 36, height: 36, opacity: 1, borderWidth: 1, background: 'rgba(0,255,136,0)' },
+  link: { width: 90, height: 90, opacity: 1, borderWidth: 1, background: 'rgba(0,255,136,0.06)' },
+  view: { width: 84, height: 84, opacity: 1, borderWidth: 0, background: 'rgba(0,255,136,0.92)' },
+  scroll: { width: 68, height: 68, opacity: 1, borderWidth: 1, background: 'rgba(0,255,136,0.04)' },
+  drag: { width: 64, height: 64, opacity: 1, borderWidth: 1, background: 'rgba(0,255,136,0.06)' },
+  text: { width: 36, height: 36, opacity: 0, borderWidth: 1, background: 'rgba(0,255,136,0)' },
 };
 
-export default Cursor;
+/**
+ * Two-part cursor: a 1:1 dot and a spring-trailed ring. Desktop + fine pointer
+ * only. Also feeds normalised pointer position to the WebGL scene.
+ */
+export default function Cursor() {
+  const fine = useFinePointer();
+  const reduced = usePrefersReducedMotion();
+  const active = fine && !reduced;
+
+  const x = useMotionValue(-200);
+  const y = useMotionValue(-200);
+  const ringX = useSpring(x, SPRING.cursorRing);
+  const ringY = useSpring(y, SPRING.cursorRing);
+
+  const [variant, setVariant] = useState('default');
+  const [pressed, setPressed] = useState(false);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    if (!active) {
+      document.documentElement.classList.remove('custom-cursor');
+      return undefined;
+    }
+
+    document.documentElement.classList.add('custom-cursor');
+
+    const onMove = (event) => {
+      x.set(event.clientX);
+      y.set(event.clientY);
+      setVisible(true);
+      setPointer(
+        (event.clientX / window.innerWidth) * 2 - 1,
+        (event.clientY / window.innerHeight) * 2 - 1
+      );
+    };
+
+    // Delegated so dynamically rendered nodes work without re-binding.
+    const onOver = (event) => {
+      const target = event.target.closest?.('[data-cursor]');
+      setVariant(target ? target.dataset.cursor : 'default');
+    };
+
+    const onDown = () => setPressed(true);
+    const onUp = () => setPressed(false);
+    const onLeave = () => setVisible(false);
+    const onEnter = () => setVisible(true);
+
+    window.addEventListener('mousemove', onMove, { passive: true });
+    document.addEventListener('mouseover', onOver, true);
+    window.addEventListener('mousedown', onDown);
+    window.addEventListener('mouseup', onUp);
+    document.addEventListener('mouseleave', onLeave);
+    document.addEventListener('mouseenter', onEnter);
+
+    return () => {
+      document.documentElement.classList.remove('custom-cursor');
+      window.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseover', onOver, true);
+      window.removeEventListener('mousedown', onDown);
+      window.removeEventListener('mouseup', onUp);
+      document.removeEventListener('mouseleave', onLeave);
+      document.removeEventListener('mouseenter', onEnter);
+    };
+  }, [active, x, y]);
+
+  if (!active) return null;
+
+  const ring = RING[variant] || RING.default;
+  const label = LABELS[variant];
+  const hideDot = variant === 'link' || variant === 'view' || variant === 'text';
+
+  return (
+    <div
+      aria-hidden="true"
+      className="pointer-events-none fixed inset-0 z-[70]"
+      style={{ opacity: visible ? 1 : 0, transition: 'opacity 150ms linear' }}
+    >
+      <motion.div className="absolute left-0 top-0" style={{ x: ringX, y: ringY }}>
+        <motion.div
+          className="flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-mint"
+          animate={{ ...ring, scale: pressed ? 0.8 : 1 }}
+          transition={{ duration: DUR.standard, ease: EASE_OUT }}
+        >
+          {label && (
+            <span
+              className="font-mono text-[10px] font-semibold tracking-[0.18em]"
+              style={{ color: variant === 'view' ? 'var(--ink)' : 'var(--mint)' }}
+            >
+              {label}
+            </span>
+          )}
+        </motion.div>
+      </motion.div>
+
+      <motion.div className="absolute left-0 top-0" style={{ x, y }}>
+        <motion.div
+          className="-translate-x-1/2 -translate-y-1/2 rounded-full bg-mint"
+          animate={{
+            width: hideDot ? 0 : 8,
+            height: hideDot ? 0 : 8,
+            opacity: hideDot ? 0 : 1,
+          }}
+          transition={{ duration: DUR.micro, ease: 'linear' }}
+        />
+      </motion.div>
+    </div>
+  );
+}
