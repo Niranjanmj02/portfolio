@@ -5,8 +5,27 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="/Portimage.svg">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#08090a" />
+  <meta name="theme-color" content="#08090a" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#f6f8fa" media="(prefers-color-scheme: light)" />
   <title>Niranjan M — AI · ML · Gen AI Engineer</title>
+
+  <!-- Resolve the theme before first paint so there's no flash of the wrong one. -->
+  <script>
+    (function () {
+      try {
+        var stored = localStorage.getItem('nm-theme');
+        var theme =
+          stored === 'light' || stored === 'dark'
+            ? stored
+            : window.matchMedia('(prefers-color-scheme: light)').matches
+              ? 'light'
+              : 'dark';
+        document.documentElement.dataset.theme = theme;
+      } catch (e) {
+        document.documentElement.dataset.theme = 'dark';
+      }
+    })();
+  </script>
   <meta name="description"
     content="AI / ML / Gen AI Engineer with 3+ years building production ML models, Generative AI systems and LLM-powered services in Python. LangGraph, RAG, TensorFlow, FastAPI." />
   <meta property="og:title" content="Niranjan M — AI · ML · Gen AI Engineer" />

@@ -18,7 +18,7 @@ export default function SectionHeading({ n, label, title, lede, children }) {
             variants={fadeUp}
           >
             <div className="eyebrow flex items-center gap-3">
-              <span className="text-mint">{n}</span>
+              <span className="text-brand">{n}</span>
               <span className="h-px w-8 bg-hair" />
               <span>{label}</span>
             </div>

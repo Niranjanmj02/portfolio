@@ -20,19 +20,19 @@ function Card({ job, index, compact = false }) {
       <motion.div variants={fadeUp} className="flex items-start justify-between gap-6">
         <div>
           <div className="eyebrow flex items-center gap-2.5">
-            <span className="text-mint">{String(index + 1).padStart(2, '0')}</span>
+            <span className="text-brand">{String(index + 1).padStart(2, '0')}</span>
             <span className="h-px w-5 bg-hair" />
             {job.period}
           </div>
           <h3 className="mt-4 text-2xl font-semibold tracking-tight text-chalk md:text-3xl">
             {job.role}
           </h3>
-          <div className="mt-1.5 font-mono text-sm text-mint">{job.legal}</div>
+          <div className="mt-1.5 font-mono text-sm text-brand">{job.legal}</div>
         </div>
 
         {job.current && (
           <span className="chip chip-accent flex items-center gap-2">
-            <span className="h-1.5 w-1.5 rounded-full bg-mint" />
+            <span className="h-1.5 w-1.5 rounded-full bg-brand" />
             current
           </span>
         )}
@@ -50,7 +50,7 @@ function Card({ job, index, compact = false }) {
             variants={fadeUp}
             className="flex gap-3.5 text-[14px] leading-relaxed text-fog"
           >
-            <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-mint/70" />
+            <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-brand/70" />
             <span>{bullet}</span>
           </motion.li>
         ))}
@@ -140,7 +140,7 @@ export default function Experience() {
     <div className="flex items-end justify-between gap-8">
       <div>
         <div className="eyebrow flex items-center gap-3">
-          <span className="text-mint">02</span>
+          <span className="text-brand">02</span>
           <span className="h-px w-8 bg-hair" />
           experience
         </div>
@@ -153,7 +153,7 @@ export default function Experience() {
             <div key={job.company} className="flex items-center gap-3">
               <span
                 className={`font-mono text-[11px] transition-colors duration-300 ${
-                  active === i ? 'text-mint' : 'text-fog'
+                  active === i ? 'text-brand' : 'text-fog'
                 }`}
               >
                 {job.company}
@@ -202,7 +202,7 @@ export default function Experience() {
         <div className="u-container mt-8">
           <div className="h-px w-full bg-hair">
             <motion.div
-              className="h-px origin-left bg-mint"
+              className="h-px origin-left bg-brand"
               style={{ scaleX: scrollYProgress }}
               transition={{ ease: EASE_OUT }}
             />

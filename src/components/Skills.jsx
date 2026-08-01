@@ -76,7 +76,7 @@ export default function Skills() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: DUR.standard, ease: EASE_OUT }}
-                className={`${WEIGHT[item.w || 1]} tracking-tight transition-colors duration-200 hover:text-mint`}
+                className={`${WEIGHT[item.w || 1]} tracking-tight transition-colors duration-200 hover:text-brand`}
               >
                 {item.n}
               </motion.span>
@@ -88,7 +88,7 @@ export default function Skills() {
           <div className="mt-16 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-hair sm:grid-cols-2 lg:grid-cols-3">
             {skillGroups.map((group) => (
               <div key={group.id} className="bg-panel/60 p-6">
-                <div className="font-mono text-[11px] uppercase tracking-[0.16em] text-mint">
+                <div className="font-mono text-[11px] uppercase tracking-[0.16em] text-brand">
                   {group.label}
                 </div>
                 <div className="mt-3 font-mono text-[11.5px] text-fog">

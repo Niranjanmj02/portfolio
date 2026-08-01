@@ -84,53 +84,72 @@ properties in any scroll handler. Target a sustained 60fps; hint with
 will-change only on currently-animating nodes.
 
 ## 3D SCROLL SCENE (fixed background canvas, scroll-driven)
-Add react-three-fiber (@react-three/fiber) + @react-three/drei. Build a
-**procedural knowledge-graph point cloud** — not an imported GLTF character or a
-generic floating blob. It should read as the RAG/Neo4j systems he actually builds:
-nodes and edges in space, quietly alive.
+Add react-three-fiber (@react-three/fiber) + three. No drei, no GLTF, no external
+asset files — the model is built from primitives so nothing has to be downloaded
+or licensed.
 
-Geometry (all procedural, zero external asset files):
-- ~600 nodes distributed on a spherical/lobed volume, rendered as a single
-  THREE.Points with a circular alpha sprite, additive blending, accent-tinted.
-- ~900 edges as one merged LineSegments (BufferGeometry with a shared position
-  buffer) connecting each node to its 3 nearest neighbours. One draw call.
-- Slow constant Y-rotation (~0.04 rad/s) so it's never static, plus vertex
-  displacement via a simplex-noise term in a custom shader for organic drift.
-- A soft depth fade so far nodes dissolve into the background rather than
-  cluttering it.
+**A laptop whose hinge is driven by the scroll.** Not a floating blob and not a
+downloaded character model.
 
-Scroll choreography — the camera and the graph are driven by scrollYProgress,
-one continuous take across the whole page (no per-section canvases):
-- Hero (0.00–0.15): camera far, whole graph visible, slow orbit. Cursor position
-  applies a ±3° damped parallax tilt.
-- About (0.15–0.35): camera dollies in; the cloud loosens (node spread ×1.3) and
-  desaturates so text stays dominant. Canvas opacity drops to ~0.45.
-- Experience (0.35–0.60): the graph re-forms into three distinct clusters — one
-  per company — travelling horizontally in sync with the pinned card scroll. The
-  active cluster brightens; the other two dim to ~30%.
-- Work (0.60–0.80): clusters collapse into a tight core that sits behind the
-  project grid, canvas opacity ~0.25, rotation slows.
-- Skills → Contact (0.80–1.00): the core expands and dissipates outward into
-  sparse drifting points, fading to near-black by the footer.
-All of it interpolated with useTransform + damped lerp inside useFrame — never
-snapped. The camera never cuts.
+Geometry (all procedural):
+- Chassis and lid as RoundedBoxGeometry; the lid hangs off a pivot group placed
+  on the hinge line at the back edge of the base.
+- A 70-key keyboard as a single InstancedMesh — one draw call for the lot.
+- Trackpad and a recessed deck inlay as thin planes.
+- The screen is a ShaderMaterial: abstract bars of code, a caret that blinks on
+  one line at a time, and a slow vertical sweep. Emissive-looking, toneMapped
+  off. Brightness is tied to how far the lid is open.
+- Total: roughly 1.5k triangles and four draw calls.
+
+Scroll choreography — one continuous take, no cuts and no per-section canvases:
+- Hero: lid closed, seen from slightly above, sitting in the right-hand gutter.
+- Hero -> About: the lid opens to ~106°, the screen lights up, the camera levels
+  off from looking-down to looking-straight-on.
+- About: laptop slides further into the right gutter and dims hard so body copy
+  stays dominant.
+- Experience: recentres and yaws a few degrees per company card, in sync with
+  the pinned horizontal scroll.
+- Work: crosses to the left gutter behind the project grid.
+- Research -> Contact: the lid closes again and the whole thing fades out.
+
+**Drive this from section position, not from scrollYProgress.** A raw 0..1
+document fraction is meaningless when one section is 340vh tall — measure each
+section's offset and express position as `stage` (2.4 = 40% through section 2),
+then key every phase off that. Interpolate with damped lerp inside useFrame so
+nothing ever snaps.
 
 Hard performance rules (this is where 3D portfolios usually die):
 - Lazy-load the whole scene with React.lazy + Suspense so three.js never blocks
   first paint. Render a CSS gradient poster until it's ready.
 - One `<Canvas>` for the entire page, `position: fixed`, `pointer-events: none`,
   `z-index: 0`, all DOM content above it.
-- dpr={[1, 1.5]}, antialias off (rely on the sprite alpha), no shadows, no
-  post-processing except an optional cheap bloom — and drop the bloom if frame
-  time exceeds 12ms.
-- frameloop="demand" is wrong here (continuous rotation), so instead: pause the
-  RAF when the canvas is off-screen or the tab is hidden.
-- Skip 3D entirely and render the static poster when any of these hold:
-  `prefers-reduced-motion: reduce`, viewport < 768px, `navigator.hardwareConcurrency < 4`,
-  or WebGL context creation fails. State this fallback in the code, don't leave
-  it implicit.
-- Budget: the lazy 3D chunk must stay under ~250KB gzipped and must not pull
+- CAREFUL: R3F applies the `<Canvas style>` prop to its outer wrapper div, not
+  to the canvas element. Never put opacity there — fade `gl.domElement` instead,
+  or the scene renders perfectly inside an invisible parent.
+- dpr={[1, 1.5]}, no shadows, no post-processing.
+- Pause the render loop when the tab is hidden.
+- Skip 3D and render the static poster when `prefers-reduced-motion: reduce`,
+  `navigator.hardwareConcurrency < 4`, or WebGL creation fails. Phones DO get the
+  3D — the scene reframes itself using a fit distance derived from the live
+  viewport aspect, so it is never cropped, and dims so text stays readable.
+- Budget: the lazy 3D chunk stays under ~250KB gzipped and must not pull
   Lighthouse Performance below 90 on desktop.
+
+## THEME (light + dark, cyan accent in both)
+`data-theme` on `<html>`, resolved by an inline script in index.html BEFORE first
+paint so there is no flash. Follow the OS preference until the visitor picks a
+theme, then persist the choice. Toggle in the navbar and in the mobile menu.
+
+- Dark: base #08090A, surfaces #101113, accent #00D4FF (10.8:1).
+- Light: base #F6F8FA, surfaces #FFFFFF, accent #0E7490 (5.1:1).
+- The accent is NOT the same hex in both. Bright cyan only reaches ~3.5:1 on a
+  light ground and fails AA for text; keep a separate `--brand-glow` at the
+  bright value for the 3D scene and glows.
+- Every colour goes through a CSS variable — no hardcoded hex in components, and
+  translucent accents via `rgba(var(--brand-rgb), a)`.
+- The laptop flips too: light silver body on dark, graphite on light, with
+  ambient and key-light intensities retuned per theme, and lower canvas opacity
+  in light mode because a dark object under dark body text is harsher.
 
 ## CURSOR SYSTEM
 A custom cursor that actually earns its place (desktop + fine pointer only —

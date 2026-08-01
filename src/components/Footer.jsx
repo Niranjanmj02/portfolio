@@ -38,7 +38,7 @@ export default function Footer() {
                   target={link.href.startsWith('http') ? '_blank' : undefined}
                   rel="noopener noreferrer"
                   data-cursor="link"
-                  className="transition-colors hover:text-mint"
+                  className="transition-colors hover:text-brand"
                 >
                   {link.label}
                 </a>

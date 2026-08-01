@@ -3,7 +3,7 @@ import { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { profile, stats } from '../data/content';
 import { DUR, EASE_OUT, fadeUp, staggerParent } from '../lib/motion';
-import { useCountUp } from '../lib/hooks';
+import { useCountUp, useIsDesktop } from '../lib/hooks';
 import { scrollToId } from '../lib/smoothScroll';
 import Magnetic from './Magnetic';
 
@@ -13,7 +13,7 @@ function Stat({ value, suffix, label }) {
     <div ref={ref}>
       <div className="font-mono text-2xl text-chalk md:text-3xl">
         {display}
-        <span className="text-mint">{suffix}</span>
+        <span className="text-brand">{suffix}</span>
       </div>
       <div className="mt-1 text-[12.5px] leading-snug text-fog">{label}</div>
     </div>
@@ -22,6 +22,7 @@ function Stat({ value, suffix, label }) {
 
 export default function Hero() {
   const ref = useRef(null);
+  const isDesktop = useIsDesktop();
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ['start start', 'end start'],
@@ -32,10 +33,19 @@ export default function Hero() {
   const opacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
   const y = useTransform(scrollYProgress, [0, 1], [0, -40]);
 
+  // The sticky hand-off only exists on desktop. On phones the hero is taller
+  // than the viewport, so it scrolls normally instead of being clipped.
+  const recede = isDesktop ? { scale, opacity, y } : undefined;
+
   return (
-    <section id="home" ref={ref} className="relative h-[130vh]" data-cursor="scroll">
-      <div className="sticky top-0 flex h-screen items-center overflow-hidden">
-        <motion.div style={{ scale, opacity, y }} className="u-container w-full">
+    <section
+      id="home"
+      ref={ref}
+      className="relative min-h-[100svh] lg:h-[130vh]"
+      data-cursor="scroll"
+    >
+      <div className="flex min-h-[100svh] items-center pb-20 pt-28 lg:sticky lg:top-0 lg:h-screen lg:overflow-hidden lg:py-0">
+        <motion.div style={recede} className="u-container w-full">
           <motion.div
             initial="hidden"
             animate="visible"
@@ -45,8 +55,8 @@ export default function Hero() {
             <div className="col-span-12 lg:col-span-8">
               <motion.div variants={fadeUp} className="eyebrow flex items-center gap-3">
                 <span className="relative flex h-1.5 w-1.5">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-mint opacity-60" />
-                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-mint" />
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand opacity-60" />
+                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-brand" />
                 </span>
                 open to opportunities
                 <span className="h-px w-6 bg-hair" />
@@ -61,7 +71,7 @@ export default function Hero() {
 
               <motion.div
                 variants={fadeUp}
-                className="mt-8 flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-sm text-mint md:text-base"
+                className="mt-8 flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-sm text-brand md:text-base"
               >
                 {profile.role}
                 <span className="h-px w-8 bg-hair" />
@@ -126,8 +136,8 @@ export default function Hero() {
         </motion.div>
 
         <motion.div
-          style={{ opacity }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
+          style={isDesktop ? { opacity } : undefined}
+          className="absolute bottom-8 left-1/2 hidden -translate-x-1/2 sm:block"
         >
           <motion.button
             type="button"
@@ -136,11 +146,11 @@ export default function Hero() {
             animate={{ opacity: 1 }}
             transition={{ delay: 1.1, duration: DUR.entrance, ease: EASE_OUT }}
             data-cursor="link"
-            className="flex flex-col items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-fog transition-colors hover:text-mint"
+            className="flex flex-col items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-fog transition-colors hover:text-brand"
           >
             scroll
             <span className="relative block h-8 w-px overflow-hidden bg-hair">
-              <span className="scroll-cue absolute inset-x-0 top-0 h-3 bg-mint" />
+              <span className="scroll-cue absolute inset-x-0 top-0 h-3 bg-brand" />
             </span>
           </motion.button>
         </motion.div>

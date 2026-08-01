@@ -75,7 +75,7 @@ export default function Contact() {
                         target={detail.href.startsWith('http') ? '_blank' : undefined}
                         rel="noopener noreferrer"
                         data-cursor="link"
-                        className="text-right font-mono text-[13px] text-chalk transition-colors hover:text-mint"
+                        className="text-right font-mono text-[13px] text-chalk transition-colors hover:text-brand"
                       >
                         {detail.v}
                       </a>

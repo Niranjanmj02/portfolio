@@ -24,7 +24,7 @@ export default {
   			hairStrong: 'var(--hair-strong)',
   			chalk: 'var(--chalk)',
   			fog: 'var(--fog)',
-  			mint: 'var(--mint)',
+  			brand: 'var(--brand)',
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {

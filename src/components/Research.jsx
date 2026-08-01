@@ -38,7 +38,7 @@ export default function Research() {
               target="_blank"
               rel="noopener noreferrer"
               data-cursor="link"
-              className="mt-6 inline-flex font-mono text-[12px] text-mint hover:underline"
+              className="mt-6 inline-flex font-mono text-[12px] text-brand hover:underline"
             >
               IEEE Xplore ↗
             </a>
@@ -52,7 +52,7 @@ export default function Research() {
               </h3>
               <div className="mt-1.5 text-[14.5px] text-fog">{education.school}</div>
               <div className="text-[13px] text-fog/80">{education.parent}</div>
-              <div className="mt-1 font-mono text-[12px] text-mint">{education.period}</div>
+              <div className="mt-1 font-mono text-[12px] text-brand">{education.period}</div>
 
               <div className="mt-6 border-t border-hair pt-5">
                 <div className="font-mono text-[11px] uppercase tracking-[0.16em] text-fog">
@@ -74,7 +74,7 @@ export default function Research() {
                 {certifications.map((cert) => (
                   <li key={cert.name} className="border-t border-hair pt-5 first:border-t-0 first:pt-0">
                     <div className="text-[15px] leading-snug text-chalk">{cert.name}</div>
-                    <div className="mt-1 font-mono text-[11.5px] text-mint">{cert.issuer}</div>
+                    <div className="mt-1 font-mono text-[11.5px] text-brand">{cert.issuer}</div>
                   </li>
                 ))}
               </ul>

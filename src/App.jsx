@@ -1,6 +1,7 @@
 // src/App.jsx
 import { MotionConfig } from 'framer-motion';
 
+import ThemeProvider from './components/ThemeProvider';
 import SmoothScroll from './components/SmoothScroll';
 import ScrollProgress from './components/ScrollProgress';
 import Scene3D from './components/three/Scene3D';
@@ -24,33 +25,35 @@ export default function App() {
   return (
     // reducedMotion="user" strips transforms from every animation at once.
     <MotionConfig reducedMotion="user" transition={{ ease: EASE_OUT }}>
-      <SmoothScroll />
-      <Scene3D />
-      <Grain />
-      <Cursor />
-      <ScrollProgress />
-      <Intro />
+      <ThemeProvider>
+        <SmoothScroll />
+        <Scene3D />
+        <Grain />
+        <Cursor />
+        <ScrollProgress />
+        <Intro />
 
-      <a
-        href="#about"
-        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[90] focus:rounded-full focus:bg-mint focus:px-4 focus:py-2 focus:font-mono focus:text-xs focus:text-ink"
-      >
-        Skip to content
-      </a>
+        <a
+          href="#about"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[90] focus:rounded-full focus:bg-brand focus:px-4 focus:py-2 focus:font-mono focus:text-xs focus:text-ink"
+        >
+          Skip to content
+        </a>
 
-      <Navbar />
+        <Navbar />
 
-      <main className="relative z-10">
-        <Hero />
-        <About />
-        <Experience />
-        <Projects />
-        <Skills />
-        <Research />
-        <Contact />
-      </main>
+        <main className="relative z-10">
+          <Hero />
+          <About />
+          <Experience />
+          <Projects />
+          <Skills />
+          <Research />
+          <Contact />
+        </main>
 
-      <Footer />
+        <Footer />
+      </ThemeProvider>
     </MotionConfig>
   );
 }

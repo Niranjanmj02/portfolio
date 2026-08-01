@@ -25,7 +25,7 @@ function ProjectCard({ project, index }) {
         setActiveCluster(index % 3);
       }}
       onMouseLeave={() => setActiveCluster(-1)}
-      className={`group relative col-span-12 flex flex-col justify-between overflow-hidden rounded-2xl border border-hair bg-panel/60 p-7 backdrop-blur-sm transition-colors duration-300 hover:border-mint/40 md:col-span-6 md:p-8 ${
+      className={`group relative col-span-12 flex flex-col justify-between overflow-hidden rounded-2xl border border-hair bg-panel/60 p-7 backdrop-blur-sm transition-colors duration-300 hover:border-brand/40 md:col-span-6 md:p-8 ${
         SPANS[index] || 'lg:col-span-6'
       } ${project.flagship ? 'min-h-[320px]' : 'min-h-[280px]'}`}
     >
@@ -34,7 +34,7 @@ function ProjectCard({ project, index }) {
         className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
         style={{
           background:
-            'radial-gradient(120% 90% at 100% 0%, rgba(0,255,136,0.10) 0%, rgba(0,255,136,0) 60%)',
+            'radial-gradient(120% 90% at 100% 0%, rgba(var(--brand-rgb),0.12) 0%, rgba(var(--brand-rgb),0) 60%)',
         }}
       />
 
@@ -46,7 +46,7 @@ function ProjectCard({ project, index }) {
           {project.flagship && <span className="chip chip-accent">flagship</span>}
         </div>
 
-        <h3 className="mt-6 text-2xl font-semibold tracking-tight text-chalk transition-colors duration-300 group-hover:text-mint md:text-[28px]">
+        <h3 className="mt-6 text-2xl font-semibold tracking-tight text-chalk transition-colors duration-300 group-hover:text-brand md:text-[28px]">
           {project.title}
         </h3>
         <div className="mt-1.5 font-mono text-[12px] text-fog">{project.kind}</div>
@@ -73,7 +73,7 @@ function ProjectCard({ project, index }) {
               target="_blank"
               rel="noopener noreferrer"
               data-cursor="link"
-              className="text-mint transition-transform duration-300 group-hover:translate-x-0.5"
+              className="text-brand transition-transform duration-300 group-hover:translate-x-0.5"
             >
               {project.linkLabel} ↗
             </a>

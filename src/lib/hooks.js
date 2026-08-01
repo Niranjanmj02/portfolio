@@ -39,11 +39,12 @@ export function webglSupported() {
 
 /**
  * The 3D scene only runs when it can run well. Anything else gets the poster.
- * Gates: reduced motion, viewport < 768px, < 4 logical cores, no WebGL.
+ * Phones are included — the laptop scene is ~1.5k triangles and four draw
+ * calls, and LaptopCanvas reframes and dims itself below 768px.
+ * Gates: reduced motion, < 4 logical cores, no WebGL.
  */
 export function use3DEnabled() {
   const reduced = usePrefersReducedMotion();
-  const wideEnough = useMediaQuery('(min-width: 768px)');
   const [capable, setCapable] = useState(false);
 
   useEffect(() => {
@@ -51,7 +52,7 @@ export function use3DEnabled() {
     setCapable(cores >= 4 && webglSupported());
   }, []);
 
-  return !reduced && wideEnough && capable;
+  return !reduced && capable;
 }
 
 /** Scroll-spy. rootMargin keeps exactly one section active around mid-viewport. */

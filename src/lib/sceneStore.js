@@ -6,6 +6,12 @@
 export const sceneStore = {
   /** whole-document scroll progress, 0..1 — written by <ScrollProgress /> */
   progress: 0,
+  /**
+   * Position in the page measured in *sections*, not pixels: 2.4 means 40%
+   * through section index 2. The 3D scene choreographs against this, because
+   * raw scroll fractions are meaningless when one section is 340vh tall.
+   */
+  stage: 0,
   /** normalised pointer, -1..1 on both axes */
   pointer: { x: 0, y: 0 },
   /** which experience cluster is centred (0-2), -1 when not in that section */

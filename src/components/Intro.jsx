@@ -71,7 +71,7 @@ export default function Intro() {
           </motion.span>
 
           <motion.div
-            className="absolute bottom-0 left-0 h-[2px] bg-mint"
+            className="absolute bottom-0 left-0 h-[2px] bg-brand"
             initial={{ width: '0%' }}
             animate={{ width: '100%' }}
             transition={{ duration: DURATION / 1000, ease: 'linear' }}

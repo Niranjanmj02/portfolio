@@ -5,6 +5,7 @@ import { profile, sections } from '../data/content';
 import { getLenis, scrollToId, scrollToTop } from '../lib/smoothScroll';
 import { useActiveSection } from '../lib/hooks';
 import { DUR, EASE_OUT, fadeUp, staggerParent } from '../lib/motion';
+import ThemeToggle from './ThemeToggle';
 
 const ids = sections.map((s) => s.id);
 const items = sections.filter((s) => s.id !== 'home');
@@ -47,7 +48,7 @@ export default function Navbar() {
             data-cursor="link"
             className="group flex items-center gap-2.5 font-mono text-sm"
           >
-            <span className="h-2 w-2 rounded-full bg-mint transition-transform duration-300 group-hover:scale-125" />
+            <span className="h-2 w-2 rounded-full bg-brand transition-transform duration-300 group-hover:scale-125" />
             <span className="text-chalk">niranjan</span>
             <span className="hidden text-fog sm:inline">/ ai engineer</span>
           </button>
@@ -70,7 +71,7 @@ export default function Navbar() {
                 )}
                 <span
                   className={`relative z-10 ${
-                    active === item.id ? 'text-mint' : 'text-fog hover:text-chalk'
+                    active === item.id ? 'text-brand' : 'text-fog hover:text-chalk'
                   }`}
                 >
                   {item.label}
@@ -84,10 +85,12 @@ export default function Navbar() {
               href={profile.resume}
               download
               data-cursor="link"
-              className="hidden font-mono text-[12.5px] text-fog transition-colors hover:text-mint sm:inline"
+              className="hidden font-mono text-[12.5px] text-fog transition-colors hover:text-brand sm:inline"
             >
               résumé ↓
             </a>
+
+            <ThemeToggle />
             <button
               type="button"
               onClick={() => setOpen((v) => !v)}
@@ -130,12 +133,24 @@ export default function Navbar() {
                     onClick={() => go(item.id)}
                     className="flex w-full items-baseline gap-4 py-5 text-left"
                   >
-                    <span className="font-mono text-xs text-mint">{item.n}</span>
+                    <span className="font-mono text-xs text-brand">{item.n}</span>
                     <span className="text-2xl text-chalk">{item.label}</span>
                   </button>
                 </motion.li>
               ))}
             </motion.ul>
+
+            <motion.div
+              variants={fadeUp}
+              initial="hidden"
+              animate="visible"
+              className="mt-10 flex items-center gap-4"
+            >
+              <ThemeToggle />
+              <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-fog">
+                theme
+              </span>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

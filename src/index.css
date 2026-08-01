@@ -5,7 +5,11 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
+  /* ── Dark (default) ───────────────────────────────────────────────── */
+  :root,
+  :root[data-theme='dark'] {
+    color-scheme: dark;
+
     /* Surfaces */
     --ink: #08090a;
     --panel: #101113;
@@ -19,8 +23,22 @@
     --chalk: #ededef;
     --fog: #8b8d91; /* 5.4:1 on --ink — passes AA */
 
-    /* The one accent */
-    --mint: #00ff88;
+    /* Cyan accent. 10.8:1 on --ink. */
+    --brand: #00d4ff;
+    --brand-hover: #5ce4ff;
+    --brand-ink: #04121a; /* text placed on a solid --brand fill */
+    --brand-glow: #00d4ff; /* always the bright cyan, both themes */
+    --brand-rgb: 0, 212, 255;
+
+    --tint: rgba(255, 255, 255, 0.02);
+    --placeholder: #55585d;
+    --grain-opacity: 0.025;
+    --poster: radial-gradient(
+        60% 50% at 50% 40%,
+        rgba(0, 212, 255, 0.07) 0%,
+        rgba(0, 212, 255, 0) 70%
+      ),
+      radial-gradient(45% 40% at 85% 12%, rgba(0, 212, 255, 0.04) 0%, rgba(0, 212, 255, 0) 70%);
 
     /* shadcn bridge */
     --background: 220 9% 4%;
@@ -29,20 +47,79 @@
     --card-foreground: 240 4% 93%;
     --popover: 220 8% 7%;
     --popover-foreground: 240 4% 93%;
-    --primary: 152 100% 50%;
+    --primary: 191 100% 50%;
     --primary-foreground: 220 9% 4%;
     --secondary: 220 8% 11%;
     --secondary-foreground: 240 4% 93%;
     --muted: 220 8% 11%;
     --muted-foreground: 220 3% 56%;
-    --accent: 152 100% 50%;
+    --accent: 191 100% 50%;
     --accent-foreground: 220 9% 4%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
     --border: 0 0% 100% / 0.08;
     --input: 220 8% 11%;
-    --ring: 152 100% 50%;
+    --ring: 191 100% 50%;
     --radius: 0.5rem;
+  }
+
+  /* ── Light ────────────────────────────────────────────────────────── */
+  :root[data-theme='light'] {
+    color-scheme: light;
+
+    --ink: #f6f8fa;
+    --panel: #ffffff;
+    --panel-2: #eef1f5;
+
+    --hair: rgba(9, 12, 20, 0.1);
+    --hair-strong: rgba(9, 12, 20, 0.2);
+
+    --chalk: #0b0d12;
+    --fog: #55606d; /* 6.2:1 on --ink */
+
+    /* Cyan-700: the bright cyan fails AA on a light ground. */
+    --brand: #0e7490;
+    --brand-hover: #0c5f77;
+    --brand-ink: #ffffff;
+    --brand-glow: #06b6d4;
+    --brand-rgb: 14, 116, 144;
+
+    --tint: rgba(9, 12, 20, 0.03);
+    --placeholder: #8d97a3;
+    --grain-opacity: 0.018;
+    --poster: radial-gradient(
+        60% 50% at 50% 40%,
+        rgba(6, 182, 212, 0.1) 0%,
+        rgba(6, 182, 212, 0) 70%
+      ),
+      radial-gradient(45% 40% at 85% 12%, rgba(14, 116, 144, 0.06) 0%, rgba(14, 116, 144, 0) 70%);
+
+    --background: 210 20% 97%;
+    --foreground: 222 22% 6%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 22% 6%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 22% 6%;
+    --primary: 192 82% 31%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 214 20% 95%;
+    --secondary-foreground: 222 22% 6%;
+    --muted: 214 20% 95%;
+    --muted-foreground: 213 12% 38%;
+    --accent: 192 82% 31%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 72% 45%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 222 22% 6% / 0.1;
+    --input: 214 20% 95%;
+    --ring: 192 82% 31%;
+  }
+
+  /* Theme swap should feel deliberate, not instant. */
+  :root {
+    --theme-transition: background-color 320ms cubic-bezier(0.65, 0, 0.35, 1),
+      border-color 320ms cubic-bezier(0.65, 0, 0.35, 1),
+      color 320ms cubic-bezier(0.65, 0, 0.35, 1);
   }
 
   html {
@@ -58,6 +135,7 @@
     color: var(--chalk);
     line-height: 1.6;
     overflow-x: hidden;
+    transition: var(--theme-transition);
   }
 
   .font-mono,
@@ -68,13 +146,13 @@
   }
 
   ::selection {
-    background: var(--mint);
-    color: var(--ink);
+    background: var(--brand);
+    color: var(--brand-ink);
   }
 
   /* Focus must stay obvious even when the native cursor is hidden. */
   :focus-visible {
-    outline: 2px solid var(--mint);
+    outline: 2px solid var(--brand);
     outline-offset: 3px;
     border-radius: 2px;
   }
@@ -109,12 +187,12 @@
     background: var(--ink);
   }
   ::-webkit-scrollbar-thumb {
-    background: #1e2024;
+    background: var(--hair-strong);
     border-radius: 999px;
     border: 3px solid var(--ink);
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #2b2e33;
+    background: var(--fog);
   }
 }
 
@@ -171,7 +249,7 @@
     border-radius: 999px;
     border: 1px solid var(--hair);
     color: var(--fog);
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--tint);
     transition: color 0.15s linear, border-color 0.15s linear,
       background-color 0.15s linear;
     white-space: nowrap;
@@ -183,9 +261,9 @@
   }
 
   .chip-accent {
-    color: var(--mint);
-    border-color: rgba(0, 255, 136, 0.28);
-    background: rgba(0, 255, 136, 0.06);
+    color: var(--brand);
+    border-color: rgba(var(--brand-rgb), 0.32);
+    background: rgba(var(--brand-rgb), 0.08);
   }
 
   .btn {
@@ -204,28 +282,28 @@
   }
 
   .btn:hover {
-    border-color: var(--mint);
-    color: var(--mint);
+    border-color: var(--brand);
+    color: var(--brand);
   }
 
   .btn-solid {
-    background: var(--mint);
-    border-color: var(--mint);
-    color: var(--ink);
+    background: var(--brand);
+    border-color: var(--brand);
+    color: var(--brand-ink);
     font-weight: 500;
   }
 
   .btn-solid:hover {
-    background: #4dffab;
-    border-color: #4dffab;
-    color: var(--ink);
+    background: var(--brand-hover);
+    border-color: var(--brand-hover);
+    color: var(--brand-ink);
   }
 
   .field {
     font-family: 'JetBrains Mono', monospace;
     font-size: 13.5px;
     width: 100%;
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--tint);
     border: 1px solid var(--hair);
     border-radius: 10px;
     color: var(--chalk);
@@ -234,13 +312,13 @@
   }
 
   .field::placeholder {
-    color: #55585d;
+    color: var(--placeholder);
   }
 
   .field:focus {
     outline: none;
-    border-color: rgba(0, 255, 136, 0.5);
-    background: rgba(0, 255, 136, 0.03);
+    border-color: rgba(var(--brand-rgb), 0.55);
+    background: rgba(var(--brand-rgb), 0.05);
   }
 
   .scroll-cue {
@@ -258,7 +336,7 @@
     inset: 0;
     z-index: 55;
     pointer-events: none;
-    opacity: 0.025;
+    opacity: var(--grain-opacity);
     overflow: hidden;
   }
 

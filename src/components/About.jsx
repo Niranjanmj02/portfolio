@@ -36,12 +36,12 @@ export default function About() {
   return (
     <section
       id="about"
-      className="relative z-10 -mt-[30vh] pt-[30vh]"
+      className="relative z-10 lg:-mt-[30vh] lg:pt-[30vh]"
     >
       {/* Curtain that wipes the hero away as this section slides over it. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-[42vh] bg-gradient-to-b from-ink via-ink/90 to-transparent"
+        className="pointer-events-none absolute inset-x-0 top-0 hidden h-[42vh] bg-gradient-to-b from-ink via-ink/90 to-transparent lg:block"
       />
 
       <div className="u-section u-container relative">
@@ -83,10 +83,10 @@ export default function About() {
                   style={{ scale: photoScale, y: photoY }}
                   className="aspect-[4/5] w-full object-cover grayscale transition-[filter] duration-700 ease-out group-hover:grayscale-0"
                 />
-                <div className="pointer-events-none absolute inset-0 bg-mint/10 mix-blend-color opacity-100 transition-opacity duration-700 group-hover:opacity-0" />
+                <div className="pointer-events-none absolute inset-0 bg-brand/10 mix-blend-color opacity-100 transition-opacity duration-700 group-hover:opacity-0" />
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between p-4 font-mono text-[11px] text-chalk">
                   <span>{profile.name}</span>
-                  <span className="text-mint">{profile.location}</span>
+                  <span className="text-brand">{profile.location}</span>
                 </div>
               </div>
             </div>
@@ -97,7 +97,7 @@ export default function About() {
                   key={pillar.k}
                   className="border-t border-hair py-5 first:border-t-0 sm:py-6"
                 >
-                  <div className="font-mono text-[11px] uppercase tracking-[0.16em] text-mint">
+                  <div className="font-mono text-[11px] uppercase tracking-[0.16em] text-brand">
                     {pillar.k}
                   </div>
                   <div className="mt-2 text-[15px] leading-relaxed text-fog">{pillar.v}</div>
